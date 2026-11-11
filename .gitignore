@@ -1,0 +1,26 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Java / Maven
+backend/target/
+*.class
+*.log
+
+# Angular / Node
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Uploaded files
+uploads/
+backend/uploads/
+
+# Operating systems
+.DS_Store
+Thumbs.db
