@@ -1,6 +1,14 @@
 # PostWave
 
-PostWave is a small full-stack social publishing application rebuilt for Java interview preparation. The backend is a production-style Spring Boot service with PostgreSQL persistence, JWT authentication, image uploads, integration tests, Docker packaging, and CI.
+PostWave is a complete social publishing application rebuilt for full-stack and Java interview preparation. It combines a responsive React client with a production-style Spring Boot API, PostgreSQL persistence, JWT authentication, image uploads, automated tests, Docker packaging, and CI.
+
+## Frontend stack
+
+- React 19, TypeScript, Vite, React Router
+- Responsive, accessible custom CSS design
+- Typed API client and persistent JWT session
+- ESLint and TypeScript build checks
+- Multi-stage Node/nginx production image
 
 ## Backend stack
 
@@ -15,15 +23,16 @@ PostWave is a small full-stack social publishing application rebuilt for Java in
 - Register and log in with BCrypt password hashing
 - Stateless Bearer-token authentication
 - Public post list/detail, including popular sorting
-- Authenticated create and wave/unwave
+- Authenticated create, edit, delete, and wave/unwave
 - Owner/admin authorization for edit and delete
 - JPEG, PNG, GIF, and WebP uploads (maximum 5 MB)
+- Responsive desktop/mobile UI, recent/popular feeds, sharing, and loading/error/empty states
 - Stable JSON error codes and field validation errors
 - Database migrations and real PostgreSQL integration tests
 
 ## Run locally
 
-Requirements: Java 21 and Docker Desktop.
+Requirements: Java 21, Node.js 22+, and Docker Desktop.
 
 ```powershell
 docker compose up -d postgres
@@ -31,13 +40,28 @@ cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-The API runs at `http://localhost:8080`. Health check: `GET /api/health`. The OpenAPI contract is available at `GET /openapi.yaml`.
+In a second terminal:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The development UI runs at `http://localhost:5173`; the API runs at `http://localhost:8080`. Health check: `GET /api/health`. The OpenAPI contract is available at `GET /openapi.yaml`.
 
 Run tests (Docker must be running because repository and API tests use Testcontainers):
 
 ```powershell
 cd backend
 .\mvnw.cmd test
+```
+
+Run all frontend static checks:
+
+```powershell
+cd frontend
+npm run check
 ```
 
 ## Run the containerized stack
@@ -48,7 +72,18 @@ Copy `.env.example` to `.env`, replace the JWT secret, then run:
 docker compose --profile app up --build
 ```
 
-PostgreSQL data and uploaded images are stored in named Docker volumes.
+Open `http://localhost:3000`. nginx serves the React SPA and reverse-proxies `/api` and `/uploads` to Spring Boot, so the browser uses one origin. PostgreSQL data and uploaded images are stored in named Docker volumes.
+
+## Project structure
+
+```text
+frontend/                       React + TypeScript single-page application
+backend/src/main/java/          Spring Boot application and domain packages
+backend/src/main/resources/     configuration, Flyway migration, OpenAPI contract
+backend/src/test/               unit, MVC, repository, and integration tests
+.github/workflows/              full-stack GitHub Actions pipeline
+compose.yaml                    PostgreSQL, backend, and frontend services
+```
 
 ## Configuration
 
@@ -82,4 +117,8 @@ Create and update use `multipart/form-data` fields named `title`, `content`, and
 
 ## Architecture talking points
 
-The controller layer owns HTTP mapping and validation, services own transactions and business authorization, repositories own persistence, and response records prevent JPA entities/password hashes from leaking through the API. JWT authentication is implemented as a stateless filter that resolves the current database user into a typed principal. Flyway owns the schema, while Hibernate uses `validate` rather than mutating production tables. The wave relationship is an explicit entity with a composite key, making uniqueness and future metadata such as `created_at` straightforward.
+The React client separates pages, reusable presentation components, authentication state, and a typed API adapter. Protected routes keep authoring screens behind authentication, while the API remains the source of truth for ownership and authorization.
+
+On the backend, controllers own HTTP mapping and validation, services own transactions and business authorization, and repositories own persistence. Response records prevent JPA entities and password hashes from leaking through the API. JWT authentication is implemented as a stateless filter that resolves the current database user into a typed principal. Flyway owns the schema, while Hibernate uses `validate` rather than mutating production tables. The wave relationship is an explicit entity with a composite key, making uniqueness and future metadata such as `created_at` straightforward.
+
+GitHub Actions runs frontend lint/type/build checks and the complete Maven test suite on every relevant push or pull request. The Docker Compose production path builds immutable frontend/backend images and waits for PostgreSQL health before starting the API.
