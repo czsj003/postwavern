@@ -1,59 +1,89 @@
-/*
- * The original PostWave project has no custom component SCSS.
- * These rules only bridge the React structure and preserve basic usability.
- */
-
-.site-header h1 { display: inline-block; }
-.logo { color: inherit; text-decoration: none; }
-.header-session { float: right; margin-top: 24px; }
-
-.page-content, .simple-form-page, .page-container { margin-top: 28px; }
-.page-heading { display: flex; justify-content: space-between; align-items: center; }
-.page-heading h2 { margin: 0; }
-.sort-controls { display: flex; gap: 4px; }
-.sort-controls .active { font-weight: bold; }
-.add-post-button { display: inline-block; margin: 20px 0; }
-
-.button {
-  display: inline-block;
-  box-sizing: border-box;
-  padding: 2px 7px;
-  border: 2px outset ButtonBorder;
-  border-radius: 2px;
-  background: ButtonFace;
-  color: ButtonText;
-  text-decoration: none;
-  font: 13.3333px Arial;
-  cursor: default;
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2d3742;
+  background: #edf2f7;
+  font-synthesis: none;
 }
-.button:active { border-style: inset; }
-.button:disabled { color: GrayText; }
-.danger-button { color: #b00020; }
 
-.post-preview { margin: 20px 0; }
-.post-preview-image { display: block; width: 150px; margin: 10px 0; }
-.post-author, .waver-list { color: #555; }
-.post-actions, .form-actions { display: flex; gap: 5px; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #edf2f7; }
+a { color: #2865a8; }
+button, input, textarea { font: inherit; }
+main { min-height: calc(100vh - 76px); }
 
-.simple-form { display: grid; gap: 10px; max-width: 500px; }
-.simple-form label { display: grid; gap: 4px; }
-.simple-form input:not([type='file']), .simple-form textarea { padding: 3px; }
-.simple-form textarea { min-height: 120px; resize: vertical; }
-.simple-form small, .form-error, .notice.error { color: red; }
-.form-switch { margin-top: 16px; }
-.current-image img { width: 200px; }
+/* Blue forum header */
+.site-header { min-height: 76px; padding: 0 max(20px, calc((100% - 1000px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 24px; background: #2f67a6; border-bottom: 3px solid #1f4f86; color: #fff; }
+.site-header h1 { margin: 0; font-size: 29px; }
+.logo { color: #fff; text-decoration: none; }
+.header-session { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.header-session a { color: #fff; }
+.header-session button { padding: 5px 10px; border: 1px solid #174478; border-radius: 3px; background: #fff; color: #24578f; cursor: pointer; }
 
-.post-content { max-width: 800px; white-space: pre-wrap; }
-.detail-image { display: block; width: 300px; max-width: 100%; margin: 12px 0; }
-.loading { margin: 20px 0; }
-.loader { display: none; }
-.notice { margin: 16px 0; }
-.empty-state { margin-top: 28px; }
+/* Shared forum panel */
+.page-content, .simple-form-page, .page-container { width: min(100% - 32px, 1000px); margin: 24px auto 50px; padding: 24px; background: #fff; border: 1px solid #cbd6e2; border-radius: 3px; box-shadow: 0 1px 3px rgba(37,70,100,.08); }
+.page-heading { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 2px solid #3975b7; }
+.page-heading h2, .simple-form-page h2, .post-detail > h2 { margin: 0; color: #285f9e; font-size: 22px; }
+.sort-controls { display: flex; gap: 4px; }
+.sort-controls button { padding: 6px 12px; border: 1px solid #b7c7d8; background: #f4f7fa; color: #46627e; cursor: pointer; }
+.sort-controls button.active { border-color: #3975b7; background: #3975b7; color: #fff; }
 
-@media (max-width: 600px) {
-  .site-header h1 { display: block; }
-  .header-session { float: none; margin: 0 0 20px; }
-  .page-heading { display: block; }
-  .sort-controls { margin-top: 10px; }
-  .post-actions, .form-actions { flex-wrap: wrap; }
+.button { display: inline-block; padding: 6px 12px; border: 1px solid #245d9b; border-radius: 3px; background: #3975b7; color: #fff; text-decoration: none; font-size: 13px; line-height: 1.25; cursor: pointer; }
+.button:hover { background: #2c65a4; }
+.button:disabled { opacity: .6; cursor: not-allowed; }
+.danger-button { border-color: #b64b4b; background: #fff; color: #a93636; }
+.danger-button:hover { background: #fff0f0; }
+.add-post-button { margin: 18px 0; }
+
+/* Thread list */
+.post-list { border: 1px solid #cbd6e2; border-bottom: 0; }
+.post-preview { position: relative; min-height: 142px; margin: 0; padding: 18px 18px 18px 185px; border-bottom: 1px solid #cbd6e2; background: #fff; }
+.post-preview:nth-child(even) { background: #f8fafc; }
+.post-preview h3 { margin: 0 0 9px; color: #245d9b; font-size: 18px; }
+.post-preview-image { position: absolute; top: 18px; left: 18px; width: 145px; height: 105px; object-fit: cover; border: 1px solid #c4ced8; background: #f2f2f2; }
+.post-author { color: #68798a; font-size: 12px; }
+.post-preview p { margin: 7px 0; font-size: 13px; }
+.post-actions, .form-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.empty-message { padding: 26px; border: 1px solid #cbd6e2; color: #68798a; text-align: center; }
+.notice { margin: 18px 0; padding: 12px 14px; border: 1px solid #cbd6e2; background: #f7f9fb; }
+.notice.error, .form-error { border-color: #e0b6b6; background: #fff3f3; color: #a52a2a; }
+.notice button { border: 0; padding: 0; background: transparent; color: #2865a8; text-decoration: underline; cursor: pointer; }
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 110px; color: #68798a; }
+.loader { width: 18px; height: 18px; border: 2px solid #cbd6e2; border-top-color: #3975b7; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Login, registration and editor forms */
+.simple-form-page { max-width: 540px; border-top: 4px solid #3975b7; }
+.simple-form-page h2 { margin-bottom: 22px; }
+.simple-form { display: grid; gap: 15px; }
+.simple-form label { display: grid; gap: 6px; color: #4c6073; font-size: 13px; font-weight: 600; }
+.simple-form input:not([type='file']), .simple-form textarea { width: 100%; padding: 9px 10px; border: 1px solid #aebdcb; border-radius: 2px; background: #fff; color: #2d3742; }
+.simple-form textarea { min-height: 150px; resize: vertical; }
+.simple-form input:focus, .simple-form textarea:focus { outline: 2px solid rgba(57,117,183,.18); border-color: #3975b7; }
+.simple-form small { color: #b12f2f; font-weight: 400; }
+.simple-form > .button { justify-self: start; min-width: 90px; }
+.form-switch { margin: 20px 0 0; padding-top: 15px; border-top: 1px solid #d8e0e8; font-size: 13px; }
+.form-error { padding: 10px 12px; font-size: 13px; }
+.current-image { padding: 10px; border: 1px solid #d5dee7; background: #f8fafc; }
+.current-image p { margin: 0 0 8px; }
+.current-image img { width: 200px; max-height: 160px; object-fit: cover; }
+
+/* Thread detail */
+.post-detail > h2 { padding-bottom: 14px; border-bottom: 2px solid #3975b7; }
+.post-detail > h3 { margin: 22px 0 5px; color: #245d9b; font-size: 21px; }
+.post-author, .waver-list { color: #68798a; font-size: 12px; }
+.post-content { margin: 20px 0; padding: 18px; border: 1px solid #d5dee7; background: #f8fafc; white-space: pre-wrap; line-height: 1.65; }
+.detail-image { display: block; width: min(100%, 500px); max-height: 420px; margin: 16px 0; object-fit: contain; border: 1px solid #cbd6e2; background: #f4f6f8; }
+
+.empty-state { text-align: center; }
+.empty-state h2 { color: #285f9e; }
+.error-number { color: #3975b7; font-size: 42px; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .site-header { padding: 14px 16px; align-items: flex-start; flex-direction: column; gap: 8px; }
+  .site-header h1 { font-size: 25px; }
+  .header-session { flex-wrap: wrap; }
+  .page-content, .simple-form-page, .page-container { width: calc(100% - 20px); margin-top: 14px; padding: 16px; }
+  .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .post-preview { min-height: 0; padding: 15px; }
+  .post-preview-image { position: static; width: 130px; height: 95px; margin: 5px 0 10px; }
 }
