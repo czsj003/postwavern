@@ -8,8 +8,8 @@ export function Layout() {
       <Header />
       <main><Outlet /></main>
       <footer className="site-footer">
-        <div><Logo /><p>Thoughtful stories, shared in waves.</p></div>
-        <p>Built with React, Spring Boot & PostgreSQL.</p>
+        <div><Logo /><p>A place for clear thinking and good writing.</p></div>
+        <p>React · Spring Boot · PostgreSQL</p>
       </footer>
     </div>
   )

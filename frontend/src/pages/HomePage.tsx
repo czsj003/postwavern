@@ -1,4 +1,4 @@
-import { ArrowRight, PenLine, Sparkles } from 'lucide-react'
+import { ArrowRight, PenLine } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
@@ -28,9 +28,9 @@ export function HomePage() {
     <>
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow"><Sparkles size={15} /> A place for ideas worth sharing</span>
-          <h1>Stories that move<br /><em>in waves.</em></h1>
-          <p>Read thoughtful perspectives, share what matters, and find people who care about the same ideas.</p>
+          <span className="eyebrow">Independent writing, thoughtfully shared</span>
+          <h1>Ideas worth<br />reading.</h1>
+          <p>A quiet place to publish useful thoughts, discover clear perspectives, and support writing that stays with you.</p>
           <div className="hero-actions">
             <Link to={isAuthenticated ? '/write' : '/signup'} className="button button-accent">
               <PenLine size={18} /> Start writing
@@ -38,16 +38,16 @@ export function HomePage() {
             <a href="#stories" className="button button-ghost">Explore stories <ArrowRight size={18} /></a>
           </div>
         </div>
-        <div className="hero-art" aria-hidden="true">
-          <div className="sun" />
-          <div className="wave wave-one" /><div className="wave wave-two" /><div className="wave wave-three" />
-          <div className="hero-quote">“Every idea begins as a ripple.”</div>
+        <div className="hero-note" aria-hidden="true">
+          <span>POSTWAVE / 01</span>
+          <p>Write with clarity.<br />Read with intention.</p>
+          <div className="hero-rule" />
         </div>
       </section>
 
       <section className="content-section" id="stories">
         <div className="section-heading">
-          <div><span className="section-kicker">THE LATEST</span><h2>Stories from the community</h2></div>
+          <div><span className="section-kicker">LATEST STORIES</span><h2>From the community</h2></div>
           <div className="segmented" role="group" aria-label="Sort stories">
             <button className={!popular ? 'active' : ''} onClick={() => setPopular(false)}>Recent</button>
             <button className={popular ? 'active' : ''} onClick={() => setPopular(true)}>Popular</button>
