@@ -102,4 +102,10 @@ public class Post {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public void update(String title, String content, String imageName) {
+        this.title = title;
+        this.content = content;
+        this.imageName = imageName;
+    }
 }

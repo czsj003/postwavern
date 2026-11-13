@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final RegistrationService registrationService;
+    private final LoginService loginService;
 
     public AuthController(
-            RegistrationService registrationService
+            RegistrationService registrationService,
+            LoginService loginService
     ) {
         this.registrationService = registrationService;
+        this.loginService = loginService;
     }
 
     @PostMapping("/signup")
@@ -27,6 +30,16 @@ public class AuthController {
     ) {
         return registrationService.register(
                 request.name(),
+                request.email(),
+                request.password()
+        );
+    }
+
+    @PostMapping("/login")
+    public LoginResult login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+        return loginService.login(
                 request.email(),
                 request.password()
         );

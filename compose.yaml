@@ -15,5 +15,26 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    profiles: ["app"]
+    build:
+      context: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/postwave
+      DB_USERNAME: postwave
+      DB_PASSWORD: postwave
+      JWT_SECRET: ${JWT_SECRET:-cG9zdHdhdmUtZGV2LWp3dC1qd3Qtc2VjcmV0LWNoYW5nZS1tZS1iZWZvcmUtcHJvZA==}
+      UPLOAD_DIRECTORY: /app/uploads
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost:5173,http://localhost:8081}
+    ports:
+      - "8080:8080"
+    volumes:
+      - postwave_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   postwave_postgres_data:
+  postwave_uploads:

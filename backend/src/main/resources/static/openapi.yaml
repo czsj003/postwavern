@@ -1,0 +1,135 @@
+openapi: 3.1.0
+info:
+  title: PostWave API
+  version: 1.0.0
+  description: Spring Boot backend for PostWave.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/health:
+    get:
+      summary: Check application health
+      responses:
+        "200": { description: Application is running }
+  /api/auth/signup:
+    post:
+      summary: Register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterRequest" }
+      responses:
+        "201": { description: User registered }
+        "409": { description: Email already registered }
+  /api/auth/login:
+    post:
+      summary: Log in and obtain a JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginRequest" }
+      responses:
+        "200": { description: Login successful }
+        "401": { description: Invalid credentials }
+  /api/posts:
+    get:
+      summary: List posts
+      parameters:
+        - in: query
+          name: filter
+          schema: { type: string, enum: [popular] }
+      responses:
+        "200": { description: Posts returned }
+    post:
+      summary: Create a post
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title: { type: string, maxLength: 200 }
+                content: { type: string }
+                image: { type: string, format: binary }
+      responses:
+        "201": { description: Post created }
+  /api/posts/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      summary: Get a post
+      responses:
+        "200": { description: Post returned }
+        "404": { description: Post not found }
+    put:
+      summary: Update an owned post
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title: { type: string, maxLength: 200 }
+                content: { type: string }
+                image: { type: string, format: binary }
+      responses:
+        "200": { description: Post updated }
+        "403": { description: Not owner or administrator }
+    delete:
+      summary: Delete an owned post
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Post deleted }
+        "403": { description: Not owner or administrator }
+  /api/posts/{id}/wave:
+    patch:
+      summary: Toggle the current user's wave
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200": { description: Wave toggled }
+  /api/posts/{id}/wavers:
+    get:
+      summary: List users who waved a post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200": { description: Wavers returned }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8, maxLength: 72 }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
