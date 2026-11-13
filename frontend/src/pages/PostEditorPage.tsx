@@ -1,4 +1,3 @@
-import { ArrowLeft, ImagePlus, Send, X } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ApiError, api, imageUrl } from '../api'
@@ -50,21 +49,19 @@ export function PostEditorPage() {
 
   if (loading) return <div className="page-container"><Loading label="Preparing editor" /></div>
   return (
-    <div className="editor-page">
-      <div className="editor-topbar"><Link to={postId ? `/posts/${postId}` : '/'} className="back-link"><ArrowLeft size={18} /> Cancel</Link><span>{editing ? 'EDIT STORY' : 'NEW STORY'}</span></div>
-      <form className="editor-form" onSubmit={submit}>
-        <div className="editor-intro"><span className="section-kicker">{editing ? 'REFINE YOUR STORY' : 'SHARE AN IDEA'}</span><h1>{editing ? 'Edit your story' : 'What’s on your mind?'}</h1><p>Give your idea room to breathe. Clear, honest writing travels furthest.</p></div>
-        {error && <div className="form-alert">{error}</div>}
-        <label className="editor-label">Title <span>{title.length}/200</span><input className="title-input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="A title people will remember" maxLength={200} required /></label>
-        {fieldErrors.title && <small className="field-error">{fieldErrors.title}</small>}
-        <label className="editor-label">Story<textarea className="content-input" value={content} onChange={(event) => setContent(event.target.value)} placeholder="Tell your story…" rows={12} required /></label>
-        {fieldErrors.content && <small className="field-error">{fieldErrors.content}</small>}
-        <div className="image-field">
-          <div><strong>Cover image</strong><p>JPEG, PNG, GIF or WebP · up to 5 MB</p></div>
-          {(preview || existingImage) ? <div className="image-preview"><img src={preview || imageUrl(existingImage!)} alt="Cover preview" /><label className="replace-image"><ImagePlus size={17} /> Replace<input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>{preview && <button type="button" onClick={() => setFile(null)} aria-label="Remove new image"><X /></button>}</div> : <label className="image-drop"><ImagePlus /><span>Add a cover image</span><small>Choose from your device</small><input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>}
+    <div className="simple-form-page post-form-page">
+      <h2>{editing ? 'Edit Post' : 'Add New Post'}</h2>
+      <form className="simple-form" onSubmit={submit} encType="multipart/form-data">
+        <label>Title<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Title" maxLength={200} required />{fieldErrors.title && <small>{fieldErrors.title}</small>}</label>
+        <label>Content<textarea value={content} onChange={(event) => setContent(event.target.value)} placeholder="Content" rows={9} required />{fieldErrors.content && <small>{fieldErrors.content}</small>}</label>
+        {(preview || existingImage) && <div className="current-image"><p>Current image:</p><img src={preview || imageUrl(existingImage!)} alt="Current post" /></div>}
+        <label>{editing ? 'Choose a new image (optional)' : 'Image (optional)'}<input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
+        <div className="form-actions">
+          <button className="button" disabled={submitting}>{submitting ? 'Please wait...' : editing ? 'Update' : 'Submit'}</button>
+          <Link className="button" to={postId ? `/posts/${postId}` : '/'}>Cancel</Link>
         </div>
-        <div className="editor-submit"><span>Your story will be visible to everyone.</span><button className="button button-accent" disabled={submitting}><Send size={17} /> {submitting ? 'Publishing…' : editing ? 'Save changes' : 'Publish story'}</button></div>
       </form>
+      {error && <p className="form-error">{error}</p>}
     </div>
   )
 }

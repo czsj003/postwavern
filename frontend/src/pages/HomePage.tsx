@@ -1,4 +1,3 @@
-import { ArrowRight, PenLine } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
@@ -12,7 +11,7 @@ export function HomePage() {
   const [popular, setPopular] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   const loadPosts = useCallback(async () => {
     setLoading(true)
@@ -24,47 +23,33 @@ export function HomePage() {
 
   useEffect(() => { void loadPosts() }, [loadPosts])
 
+  async function deletePost(id: number) {
+    if (!window.confirm('Delete this post?')) return
+    try {
+      await api.deletePost(id)
+      setPosts((current) => current.filter((post) => post.id !== id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to delete post.')
+    }
+  }
+
   return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">Independent writing, thoughtfully shared</span>
-          <h1>Ideas worth<br />reading.</h1>
-          <p>A quiet place to publish useful thoughts, discover clear perspectives, and support writing that stays with you.</p>
-          <div className="hero-actions">
-            <Link to={isAuthenticated ? '/write' : '/signup'} className="button button-accent">
-              <PenLine size={18} /> Start writing
-            </Link>
-            <a href="#stories" className="button button-ghost">Explore stories <ArrowRight size={18} /></a>
-          </div>
+    <section className="page-content">
+      <div className="page-heading">
+        <h2>All Posts</h2>
+        <div className="sort-controls" role="group" aria-label="Sort posts">
+          <button className={!popular ? 'active' : ''} onClick={() => setPopular(false)}>Recent</button>
+          <button className={popular ? 'active' : ''} onClick={() => setPopular(true)}>Popular</button>
         </div>
-        <div className="hero-note" aria-hidden="true">
-          <span>POSTWAVE / 01</span>
-          <p>Write with clarity.<br />Read with intention.</p>
-          <div className="hero-rule" />
-        </div>
-      </section>
+      </div>
+      <Link to={isAuthenticated ? '/write' : '/login'} className="button add-post-button">Add New Post</Link>
 
-      <section className="content-section" id="stories">
-        <div className="section-heading">
-          <div><span className="section-kicker">LATEST STORIES</span><h2>From the community</h2></div>
-          <div className="segmented" role="group" aria-label="Sort stories">
-            <button className={!popular ? 'active' : ''} onClick={() => setPopular(false)}>Recent</button>
-            <button className={popular ? 'active' : ''} onClick={() => setPopular(true)}>Popular</button>
-          </div>
-        </div>
-
-        {loading && <Loading />}
-        {error && <div className="notice error"><p>{error}</p><button onClick={() => void loadPosts()}>Try again</button></div>}
-        {!loading && !error && posts.length === 0 && (
-          <div className="empty-state"><div className="empty-mark">~</div><h3>No stories yet</h3><p>Be the first person to send an idea into the world.</p><Link to={isAuthenticated ? '/write' : '/signup'} className="button button-dark">Write the first story</Link></div>
-        )}
-        {!loading && posts.length > 0 && (
-          <div className="post-grid">
-            {posts.map((post, index) => <PostCard key={post.id} post={post} featured={index === 0 && posts.length > 2} />)}
-          </div>
-        )}
-      </section>
-    </>
+      {loading && <Loading label="Loading posts..." />}
+      {error && <div className="notice error"><p>{error}</p><button onClick={() => void loadPosts()}>Try again</button></div>}
+      {!loading && !error && posts.length === 0 && <p className="empty-message">No posts found.</p>}
+      {!loading && posts.length > 0 && <div className="post-list">
+        {posts.map((post) => <PostCard key={post.id} post={post} canManage={user?.id === post.userID} onDelete={() => void deletePost(post.id)} />)}
+      </div>}
+    </section>
   )
 }
